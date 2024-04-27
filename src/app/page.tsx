@@ -11,6 +11,7 @@ export default async function HomePage() {
     content: true,
   }));
   const posts = await selectPosts.run(client);
+  console.log(posts);
 
   return (
     <div className="container mx-auto bg-black p-4 text-white">
