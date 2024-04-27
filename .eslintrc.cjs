@@ -4,7 +4,7 @@ const config = {
   parserOptions: {
     project: true,
   },
-  ignorePatterns: ["./src/edgeql-js/*"],
+  ignorePatterns: ["**/edgeql-js/"],
   plugins: ["@typescript-eslint", "drizzle"],
   extends: [
     "next/core-web-vitals",
