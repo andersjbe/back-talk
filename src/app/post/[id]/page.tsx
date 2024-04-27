@@ -1,6 +1,6 @@
-import e from "dbschema/edgeql-js";
 import createClient from "edgedb";
 import Link from "next/link";
+import e from "~/edgeql-js";
 
 const client = createClient();
 
