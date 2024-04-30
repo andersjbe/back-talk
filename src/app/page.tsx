@@ -1,29 +1,42 @@
-import createClient from "edgedb";
-import Link from "next/link";
-import e from "~/edgeql-js";
+import type { ActionResult } from "next/dist/server/app-render/types";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { lucia, validateRequest } from "~/lib/auth/lucia";
 
-const client = createClient();
+async function logout(): Promise<ActionResult> {
+  "use server";
+  const { session } = await validateRequest();
+  if (!session) {
+    return {
+      error: "Unauthorized",
+    };
+  }
+
+  await lucia.invalidateSession(session.id);
+
+  const sessionCookie = lucia.createBlankSessionCookie();
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes,
+  );
+  return redirect("/");
+}
 
 export default async function HomePage() {
-  const selectPosts = e.select(e.BlogPost, () => ({
-    id: true,
-    title: true,
-    content: true,
-  }));
-  const posts = await selectPosts.run(client);
+  const { user } = await validateRequest();
 
   return (
     <div className="container mx-auto bg-black p-4 text-white">
-      <h1 className="mb-4 text-3xl font-bold">Posts</h1>
-      <ul>
-        {posts.map((post) => (
-          <li key={post.id} className="mb-4">
-            <Link href={`/post/${post.id}`} className="text-blue-500">
-              {post.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <h1 className="mb-4 text-3xl font-bold">Welcome to BackTalk!</h1>
+      {user ? (
+        <form action={logout}>
+          <h2> Hello {user.username}</h2>
+          <button type="submit">Logout</button>
+        </form>
+      ) : (
+        <a href="/login/github">Sign In</a>
+      )}
     </div>
   );
 }

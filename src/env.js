@@ -7,7 +7,8 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    EDGEDB_SECRET_KEY: z.string(),
+    GITHUB_CLIENT_ID: z.string(),
+    GITHUB_CLIENT_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -27,7 +28,8 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    EDGEDB_SECRET_KEY: process.env.EDGEDB_SECRET_KEY,
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
