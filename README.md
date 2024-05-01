@@ -1,29 +1,32 @@
-# Create T3 App
+# BackTalk
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A place to share talks from tech conferences and get hyped about future conferences.
 
-## What's next? How do I make an app with this?
+## Todo
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
-
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
-
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- [X] Create Edge DB and connect locally and on the cloud
+- [X] Set up authentication flow
+- [X] Successful initial deployment
+- [X] Setup shadcn with custom theme
+- [ ] Create schemas for the different models like talk, conference, talk comment, conference post, conference member, etc.
+- [ ] Setup UploadThing
+- Talk recordings
+  - [ ] Set up Youtube player to display recorded talks
+  - [ ] Create form for uploading new talks
+  - [ ] Add comments for authenticated users on each video
+  - [ ] Track views and likes on each video
+  - [ ] Have a page for displaying the top 50 talks (by # of likes)
+  - [ ] Users can search for talks by different tags like "Javascript", "AI", "Informative", "Funny/entertaining"
+  - [ ] Users can also search by the speaker
+  - [ ] Users can search by year and conference
+  - [ ] *Bonus* If a talk transcript is included, it can be searched for with AI
+- Conferences
+  - [ ] Users can see a list of groups for previous/upcoming conferences.
+  - [ ] For upcoming and current conferences, users can opt into sharing their contact info with other people in the group who are also interested in connecting (tinder rules)
+  - [ ] Users can ask questions and post different memories from the conference.
+  - [ ] Users can upload photos they can share as memories
+- Users
+  - [ ] Each user has a page that lists all of the conference groups they've attended
+  - [ ] Add an option to connect a speaker profile to a user (Requires verification)
+- [ ] Create a landing/home page with popular and recent talks
+- [ ] Optimize and other considerations for production- Remove unnecessary console.logs, consider setting up upstash, security check, etc.
