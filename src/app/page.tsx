@@ -1,6 +1,7 @@
 import type { ActionResult } from "next/dist/server/app-render/types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Button } from "~/components/ui/button";
 import { lucia, validateRequest } from "~/lib/auth/lucia";
 
 async function logout(): Promise<ActionResult> {
@@ -27,12 +28,14 @@ export default async function HomePage() {
   const { user } = await validateRequest();
 
   return (
-    <div className="container mx-auto bg-black p-4 text-white">
+    <div className="container mx-auto ">
       <h1 className="mb-4 text-3xl font-bold">Welcome to BackTalk!</h1>
       {user ? (
         <form action={logout}>
           <h2> Hello {user.username}</h2>
-          <button type="submit">Logout</button>
+          <Button variant="link" type="submit">
+            Logout
+          </Button>
         </form>
       ) : (
         <a href="/login/github">Sign In</a>
