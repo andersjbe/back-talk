@@ -1,6 +1,6 @@
 # BackTalk
 
-A place to share talks from tech conferences and get hyped about future conferences.
+A place to share talks from tech conferences and get hyped about future conferences. Made for EdgeDB + Vercel Hackathon 4/26/2024-5/26/2024
 
 ## Todo
 
