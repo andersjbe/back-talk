@@ -10,10 +10,10 @@ module default {
     multi sessions := (.<user[is Session]);
     multi vieweRecordings: TalkRecording {
       liked: bool {
-          default := false;
+         default := false;
        }
        lastViewed: datetime {
-          default := datetime_current();
+         default := datetime_current();
        }
     }
 
@@ -50,8 +50,8 @@ module default {
     required length: duration;
     required speaker: Speaker;
     createdAt: datetime {
-        default := datetime_current();
-       }
+      default := datetime_current();
+    }
 
     tags := .<talks[is TalkTag];
     userViews := .<vieweRecordings[is User];
@@ -64,6 +64,4 @@ module default {
 
     multi talks: TalkRecording;
   }
-
-
 }

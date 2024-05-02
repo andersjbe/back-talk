@@ -3,6 +3,9 @@ import "~/styles/globals.css";
 // import { Inter as FontSans } from "next/font/google";
 import { GeistSans as FontSans } from "geist/font/sans";
 
+import Navbar from "~/components/navbar";
+import { ThemeProvider } from "~/components/theme-provider";
+import { validateRequest } from "~/lib/auth/lucia";
 import { cn } from "~/lib/utils";
 
 // const fontSans = FontSans({
@@ -16,11 +19,13 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { user } = await validateRequest();
+
   return (
     <html lang="en">
       <body
@@ -30,7 +35,15 @@ export default function RootLayout({
           FontSans.variable,
         )}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar user={user} />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
