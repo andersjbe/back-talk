@@ -39,7 +39,7 @@ module default {
     xHandle: str;
     linkedinHandle: str;
 
-    multi talks := (.<speaker[is TalkRecording]);
+    required multi talks: TalkRecording;
   }
 
   type TalkRecording {
@@ -48,12 +48,12 @@ module default {
     required videoUrl: str;
     required year: int32;
     required length: duration;
-    required speaker: Speaker;
     createdAt: datetime {
       default := datetime_current();
     }
 
-    tags := .<talks[is TalkTag];
+    speakers := .<talks[is Speaker];
+    required multi tags: TalkTag;
     userViews := .<vieweRecordings[is User];
   }
 
@@ -62,6 +62,6 @@ module default {
       constraint exclusive;
     }
 
-    multi talks: TalkRecording;
+    talks := .<tags[is TalkRecording];
   }
 }
