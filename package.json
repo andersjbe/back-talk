@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "npx @edgedb/generate edgeql-js --out ./src/edgeql-js && next build",
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "lint": "next lint",
     "start": "next start",
     "db:generate": "npx @edgedb/generate edgeql-js --out ./src/edgeql-js"
