@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Combobox } from "~/components/combobox";
@@ -24,10 +25,12 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { createTag } from "./actions";
+import { createTag, createTalk } from "./actions";
 import { talkSchema } from "./schema";
 
 const CURRENT_YEAR = new Date(Date.now()).getFullYear();
+
+const talkFormSchema = talkSchema;
 
 function NewTalkDialog({
   tags,
@@ -37,13 +40,14 @@ function NewTalkDialog({
   speakers: { label: string; value: string }[];
 }) {
   const tagOption = tags.map(({ name }) => ({ label: name, value: name }));
-  console.log(tags);
-  const form = useForm<z.infer<typeof talkSchema>>({
-    resolver: zodResolver(talkSchema),
+  const [speakerOpts, setSpeakerOpts] = useState(speakers);
+  const [selectedSpeakers, setSelectedSpeaker] = useState<string[]>([]);
+
+  const form = useForm<z.infer<typeof talkFormSchema>>({
+    resolver: zodResolver(talkFormSchema),
     defaultValues: {
       description: "",
       length: 0,
-      speakerIds: [],
       tags: [],
       title: "",
       videoUrl: "",
@@ -65,7 +69,15 @@ function NewTalkDialog({
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((values) => console.log(values))}
+            onSubmit={form.handleSubmit(async (values) => {
+              const body = JSON.stringify({
+                ...values,
+                speakers: speakerOpts.filter(({ value }) =>
+                  selectedSpeakers.includes(value),
+                ),
+              });
+              await createTalk(body);
+            })}
             className="grid gap-4 py-4"
           >
             <FormField
@@ -158,32 +170,31 @@ function NewTalkDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="speakerIds"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right">Speakers*</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Combobox
-                      options={speakers}
-                      selected={field.value.map((sp) => sp[0])}
-                      mode="multiple"
-                      onChange={field.onChange}
-                      placeholder="Pick or create relevant tags"
-                      onCreate={(val) => {
-                        form.setValue("speakerIds", [
-                          ...form.getValues("speakerIds"),
-                          [val, val],
-                        ]);
-                        speakers.push({ label: val, value: val });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage className="col-span-4 text-right" />
-                </FormItem>
-              )}
-            />
+            <FormItem className="grid grid-cols-4 items-center gap-4">
+              <FormLabel className="text-right">Speakers*</FormLabel>
+              <FormControl className="col-span-3">
+                <Combobox
+                  options={speakerOpts}
+                  selected={selectedSpeakers}
+                  mode="multiple"
+                  onChange={(sp) => {
+                    if (Array.isArray(sp)) {
+                      setSelectedSpeaker([...sp]);
+                    }
+                  }}
+                  placeholder="Pick or create relevant tags"
+                  onCreate={(val) => {
+                    const newID = "*" + crypto.randomUUID();
+                    setSpeakerOpts((opts) => [
+                      ...opts,
+                      { label: val, value: newID },
+                    ]);
+                    setSelectedSpeaker([...selectedSpeakers, newID]);
+                  }}
+                />
+              </FormControl>
+              <FormMessage className="col-span-4 text-right" />
+            </FormItem>
             <Button type="submit">Submit</Button>
           </form>
         </Form>

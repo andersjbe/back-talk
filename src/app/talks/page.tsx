@@ -3,7 +3,8 @@ import NewTalkDialog from "./new-talk";
 
 export default async function TalksPage() {
   const tags = await getAllTags();
-  const speakers = (await getAllSpeakers()).map(({ id, name }) => ({
+  const speakerDB = await getAllSpeakers();
+  const speakers = speakerDB.map(({ id, name }) => ({
     label: name,
     value: id,
   }));

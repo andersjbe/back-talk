@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import "server-only";
 import e, { createClient } from "~/edgeql-js";
 
 const client = createClient();
@@ -16,7 +17,7 @@ export const getAllTags = unstable_cache(
 );
 
 export const getAllSpeakers = unstable_cache(
-  async () =>
+  () =>
     e
       .select(e.Speaker, (sp) => ({
         id: true,

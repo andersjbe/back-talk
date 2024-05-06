@@ -34,12 +34,14 @@ module default {
   }
 
   type Speaker {
-    required name: str;
+    required name: str {
+      constraint exclusive;
+    }
     positionTitle: str;
     xHandle: str;
     linkedinHandle: str;
 
-    required multi talks: TalkRecording;
+    talk := .<speakers[is TalkRecording];
   }
 
   type TalkRecording {
@@ -52,7 +54,7 @@ module default {
       default := datetime_current();
     }
 
-    speakers := .<talks[is Speaker];
+    required multi speakers: Speaker;
     required multi tags: TalkTag;
     userViews := .<vieweRecordings[is User];
   }
