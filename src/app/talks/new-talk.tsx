@@ -42,12 +42,14 @@ function NewTalkDialog({
   const tagOption = tags.map(({ name }) => ({ label: name, value: name }));
   const [speakerOpts, setSpeakerOpts] = useState(speakers);
   const [selectedSpeakers, setSelectedSpeaker] = useState<string[]>([]);
+  const [speakerError, setSpeakerError] = useState<string>("");
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof talkFormSchema>>({
     resolver: zodResolver(talkFormSchema),
     defaultValues: {
       description: "",
-      length: 0,
+      length: 1,
       tags: [],
       title: "",
       videoUrl: "",
@@ -56,7 +58,7 @@ function NewTalkDialog({
   });
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
       <DialogTrigger asChild>
         <Button variant="secondary" size="sm">
           <Plus className="mr-2 h-4 w-4" />
@@ -70,13 +72,21 @@ function NewTalkDialog({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(async (values) => {
+              setSpeakerError("");
+              if (selectedSpeakers.length === 0) {
+                setSpeakerError("At least one speaker is required");
+                return;
+              }
               const body = JSON.stringify({
                 ...values,
                 speakers: speakerOpts.filter(({ value }) =>
                   selectedSpeakers.includes(value),
                 ),
               });
-              await createTalk(body);
+              const { success } = await createTalk(body);
+              if (success) {
+                setOpen(false);
+              }
             })}
             className="grid gap-4 py-4"
           >
@@ -87,7 +97,7 @@ function NewTalkDialog({
                 <FormItem className="grid grid-cols-4 items-center gap-4">
                   <FormLabel className="text-right">Title*</FormLabel>
                   <FormControl className="col-span-3">
-                    <Input {...field} />
+                    <Input required {...field} />
                   </FormControl>
                   <FormMessage className="col-span-4 text-right" />
                 </FormItem>
@@ -113,7 +123,7 @@ function NewTalkDialog({
                 <FormItem className="grid grid-cols-4 items-center gap-4">
                   <FormLabel className="text-right">Video URL*</FormLabel>
                   <FormControl className="col-span-3">
-                    <Input {...field} />
+                    <Input required {...field} />
                   </FormControl>
                   <FormMessage className="col-span-4 text-right" />
                 </FormItem>
@@ -131,7 +141,7 @@ function NewTalkDialog({
                     </FormDescription>
                   </FormLabel>
                   <FormControl className="col-span-3">
-                    <Input type="number" {...field} />
+                    <Input required type="number" min={1} {...field} />
                   </FormControl>
                   <FormMessage className="col-span-4 text-right" />
                 </FormItem>
@@ -144,7 +154,7 @@ function NewTalkDialog({
                 <FormItem className="grid grid-cols-4 items-center gap-4">
                   <FormLabel className="text-right">Year*</FormLabel>
                   <FormControl className="col-span-3">
-                    <Input type="number" {...field} />
+                    <Input required type="number" {...field} />
                   </FormControl>
                   <FormMessage className="col-span-4 text-right" />
                 </FormItem>
@@ -193,7 +203,11 @@ function NewTalkDialog({
                   }}
                 />
               </FormControl>
-              <FormMessage className="col-span-4 text-right" />
+              {speakerError && (
+                <p className="col-span-4 text-right text-sm font-medium text-destructive">
+                  {speakerError}
+                </p>
+              )}
             </FormItem>
             <Button type="submit">Submit</Button>
           </form>
