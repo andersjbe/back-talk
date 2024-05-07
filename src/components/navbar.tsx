@@ -24,7 +24,7 @@ function Navbar({ user }: { user: User | null }) {
   const { setTheme, theme } = useTheme();
 
   return (
-    <div className="sticky left-0 top-0 p-2">
+    <div className="sticky left-0 top-0 bg-background/75 px-2 pt-2">
       <div className="container mx-auto flex items-center justify-between border-b-2 border-secondary/10 pb-2">
         <Link className="text-xl font-bold" href="/">
           Back<span className="text-primary">Talk</span>

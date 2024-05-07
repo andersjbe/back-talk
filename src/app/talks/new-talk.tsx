@@ -85,6 +85,8 @@ function NewTalkDialog({
               });
               const { success } = await createTalk(body);
               if (success) {
+                form.reset();
+                setSelectedSpeaker([]);
                 setOpen(false);
               }
             })}

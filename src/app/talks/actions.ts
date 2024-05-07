@@ -51,7 +51,6 @@ const talkFormSchema = talkSchema.extend({
 export const createTalk = async (bodyString: string) => {
   const talk = talkFormSchema.parse(JSON.parse(bodyString));
 
-  console.log("SPEAKERS FROM BODY", talk.speakers);
   try {
     const newSpeakers = await insertSpeakers.run(client, {
       speakers: talk.speakers
@@ -66,8 +65,6 @@ export const createTalk = async (bodyString: string) => {
       }
       return sp.value;
     });
-
-    console.log(speakers);
 
     await insertTalk.run(client, {
       description: talk.description || "",
@@ -86,6 +83,7 @@ export const createTalk = async (bodyString: string) => {
       speakers,
     });
 
+    revalidateTag("get-talks");
     return { success: true };
   } catch (err) {
     console.log(err);
@@ -94,7 +92,6 @@ export const createTalk = async (bodyString: string) => {
 };
 
 export const createTag = async (tagName: string) => {
-  console.log({ tagName });
   try {
     await e
       .insert(e.TalkTag, {

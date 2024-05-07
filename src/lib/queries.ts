@@ -28,6 +28,8 @@ export const getAllSpeakers = unstable_cache(
   { tags: ["get-all-speakers"] },
 );
 
+const talksCount = e.params({}, (_) => e.count(e.TalkRecording));
+
 const talksQuery = e.params({ skip: e.optional(e.int32) }, (p) =>
   e.select(e.TalkRecording, (talk) => ({
     id: true,
@@ -44,12 +46,16 @@ const talksQuery = e.params({ skip: e.optional(e.int32) }, (p) =>
       name: true,
     },
     order_by: talk.createdAt,
-    limit: 24,
+    limit: 12,
     offset: p.skip,
   })),
 );
 export const getTalks = unstable_cache(
-  (page: number) => talksQuery.run(client, { skip: (page - 1) * 24 }),
+  async (page: number) => {
+    const count = await e.count(e.TalkRecording).run(client);
+    const talks = await talksQuery.run(client, { skip: (page - 1) * 24 });
+    return { talks, count };
+  },
   [],
   { tags: ["get-talks"] },
 );
