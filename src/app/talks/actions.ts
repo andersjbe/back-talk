@@ -71,7 +71,14 @@ export const createTalk = async (bodyString: string) => {
 
     await insertTalk.run(client, {
       description: talk.description || "",
-      length: await e.duration(`${talk.length}`).run(client),
+      length: await e
+        .to_duration({
+          minutes: talk.length,
+          hours: 0,
+          microseconds: 0,
+          seconds: 0,
+        })
+        .run(client),
       tagsNames: talk.tags,
       title: talk.title,
       videoUrl: talk.videoUrl,

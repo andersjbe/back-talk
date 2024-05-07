@@ -27,3 +27,29 @@ export const getAllSpeakers = unstable_cache(
   [],
   { tags: ["get-all-speakers"] },
 );
+
+const talksQuery = e.params({ skip: e.optional(e.int32) }, (p) =>
+  e.select(e.TalkRecording, (talk) => ({
+    id: true,
+    createdAt: true,
+    description: true,
+    length: true,
+    title: true,
+    year: true,
+    tags: {
+      name: true,
+      limit: 5,
+    },
+    speakers: {
+      name: true,
+    },
+    order_by: talk.createdAt,
+    limit: 24,
+    offset: p.skip,
+  })),
+);
+export const getTalks = unstable_cache(
+  (page: number) => talksQuery.run(client, { skip: (page - 1) * 24 }),
+  [],
+  { tags: ["get-talks"] },
+);

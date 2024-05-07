@@ -60,7 +60,7 @@ function NewTalkDialog({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
       <DialogTrigger asChild>
-        <Button variant="secondary" size="sm">
+        <Button variant="default" size="sm">
           <Plus className="mr-2 h-4 w-4" />
           New Talk
         </Button>

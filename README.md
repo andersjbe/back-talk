@@ -8,11 +8,11 @@ A place to share talks from tech conferences and get hyped about future conferen
 - [X] Set up authentication flow
 - [X] Successful initial deployment
 - [X] Setup shadcn with custom theme
-- [ ] Create schemas for the different models like talk, conference, talk comment, conference post, conference member, etc.
+- [X] Create schemas for the different models like talk, conference, talk comment, conference post, conference member, etc.
 - [ ] Setup UploadThing
 - Talk recordings
+  - [X] Create form for uploading new talks
   - [ ] Set up Youtube player to display recorded talks
-  - [ ] Create form for uploading new talks
   - [ ] Add comments for authenticated users on each video
   - [ ] Track views and likes on each video
   - [ ] Have a page for displaying the top 50 talks (by # of likes)
