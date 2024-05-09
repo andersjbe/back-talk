@@ -31,13 +31,11 @@ export const getAllSpeakers = unstable_cache(
 const talksQuery = e.params(
   {
     skip: e.optional(e.int32),
-    tagName: e.optional(e.str),
+    tagName: e.optional(e.uuid),
     speakerId: e.optional(e.uuid),
     queryTerm: e.optional(e.str),
   },
   (p) => {
-    // console.log(p.speakerId.runJSON(client));
-
     return e.select(e.TalkRecording, (talk) => ({
       id: true,
       createdAt: true,
@@ -52,7 +50,18 @@ const talksQuery = e.params(
       speakers: {
         name: true,
       },
-      filter: e.all(e.set(e.op(p.speakerId, "in", talk.speakers.id))),
+      filter: e.all(
+        e.set(
+          e.op(p.speakerId, "in", talk.speakers.id),
+          e.op(p.tagName, "in", talk.tags.id),
+          e.any(
+            e.set(
+              e.op(talk.title, "ilike", p.queryTerm),
+              e.op(talk.description, "ilike", p.queryTerm),
+            ),
+          ),
+        ),
+      ),
 
       order_by: talk.createdAt,
       limit: 12,
@@ -70,9 +79,9 @@ export const getTalks = unstable_cache(
     const count = await e.count(e.TalkRecording).run(client);
     const talks = await talksQuery.run(client, {
       skip: (page - 1) * 24,
-      queryTerm: searchTerm,
+      queryTerm: searchTerm ? `%${searchTerm}%` : null,
       speakerId: speakerId || null,
-      tagName: tagName,
+      tagName: tagName || null,
     });
     return { talks, count };
   },

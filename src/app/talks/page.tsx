@@ -19,7 +19,7 @@ import { Separator } from "~/components/ui/separator";
 import { validateRequest } from "~/lib/auth/lucia";
 import { getAllSpeakers, getAllTags, getTalks } from "~/lib/queries";
 import { durationToLength } from "~/lib/utils";
-import { SpeakerFilter } from "./filters";
+import { ResetButton, SpeakerFilter, TagFilter, TalkSearch } from "./filters";
 import NewTalkDialog from "./new-talk";
 
 export default async function TalksPage({
@@ -55,8 +55,17 @@ export default async function TalksPage({
         <h1 className="text-2xl font-semibold">Talks</h1>
         <NewTalk speakers={speakers} tags={tags} />
       </div>
-      <div className="flex items-center">
-        <SpeakerFilter speakers={speakers} />
+      <div className="mt-2 flex flex-col items-start justify-between md:flex-row md:items-center">
+        <div className="flex flex-row flex-wrap gap-2">
+          <SpeakerFilter speakers={speakers} />
+          <TagFilter tags={tags} />
+          <TalkSearch />
+        </div>
+        <div>
+          {(searchParams.query ||
+            searchParams.speakerId ||
+            searchParams.tagName) && <ResetButton />}
+        </div>
       </div>
       <Separator className="my-4" />
       <div className="mb-2 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
