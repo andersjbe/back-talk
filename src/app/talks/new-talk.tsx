@@ -219,4 +219,6 @@ function NewTalkDialog({
   );
 }
 
+export const dynamic = "force-dynamic";
+
 export default NewTalkDialog;

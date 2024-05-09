@@ -19,23 +19,44 @@ import { Separator } from "~/components/ui/separator";
 import { validateRequest } from "~/lib/auth/lucia";
 import { getAllSpeakers, getAllTags, getTalks } from "~/lib/queries";
 import { durationToLength } from "~/lib/utils";
+import { SpeakerFilter } from "./filters";
 import NewTalkDialog from "./new-talk";
 
 export default async function TalksPage({
   searchParams,
 }: {
-  searchParams: { page?: number };
+  searchParams: {
+    page?: number;
+    speakerId?: string;
+    tagName?: string;
+    query?: string;
+  };
 }) {
   const page = searchParams.page ? Number(searchParams.page) : 1;
-  const { talks, count } = await getTalks(page);
 
+  const { talks, count } = await getTalks(
+    page,
+    searchParams.query,
+    searchParams.speakerId,
+    searchParams.tagName,
+  );
   const totalPages = Math.ceil(count / 12);
+
+  const tags = await getAllTags();
+  const speakerDB = await getAllSpeakers();
+  const speakers = speakerDB.map(({ id, name }) => ({
+    label: name,
+    value: id,
+  }));
 
   return (
     <main className="container mx-auto mt-2">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Talks</h1>
-        <NewTalk />
+        <NewTalk speakers={speakers} tags={tags} />
+      </div>
+      <div className="flex items-center">
+        <SpeakerFilter speakers={speakers} />
       </div>
       <Separator className="my-4" />
       <div className="mb-2 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
@@ -60,7 +81,7 @@ export default async function TalksPage({
               {talk.tags.map(({ name }) => (
                 <span
                   key={name}
-                  className="text-bold rounded bg-accent p-1 text-sm font-semibold text-accent-foreground dark:bg-accent/70"
+                  className="text-bold rounded bg-secondary p-1 text-sm font-semibold text-secondary-foreground dark:bg-secondary/70"
                 >
                   {name}
                 </span>
@@ -156,13 +177,13 @@ function Pages({
   );
 }
 
-async function NewTalk() {
-  const tags = await getAllTags();
-  const speakerDB = await getAllSpeakers();
-  const speakers = speakerDB.map(({ id, name }) => ({
-    label: name,
-    value: id,
-  }));
+async function NewTalk({
+  speakers,
+  tags,
+}: {
+  tags: { id: string; name: string }[];
+  speakers: { label: string; value: string }[];
+}) {
   const { session } = await validateRequest();
 
   if (!session) return null;
