@@ -1,3 +1,5 @@
+import { Filter } from "lucide-react";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,11 +17,22 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "~/components/ui/pagination";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { Separator } from "~/components/ui/separator";
 import { validateRequest } from "~/lib/auth/lucia";
 import { getAllSpeakers, getAllTags, getTalks } from "~/lib/queries";
 import { durationToLength } from "~/lib/utils";
-import { ResetButton, SpeakerFilter, TagFilter, TalkSearch } from "./filters";
+import {
+  OrderSelect,
+  ResetButton,
+  SpeakerFilter,
+  TagFilter,
+  TalkSearch,
+} from "./filters";
 import NewTalkDialog from "./new-talk";
 
 export default async function TalksPage({
@@ -30,16 +43,18 @@ export default async function TalksPage({
     speakerId?: string;
     tagName?: string;
     query?: string;
+    orderBy?: string;
   };
 }) {
   const page = searchParams.page ? Number(searchParams.page) : 1;
 
-  const { talks, count } = await getTalks(
+  const { talks, count } = await getTalks({
     page,
-    searchParams.query,
-    searchParams.speakerId,
-    searchParams.tagName,
-  );
+    searchTerm: searchParams.query,
+    speakerId: searchParams.speakerId,
+    tagName: searchParams.tagName,
+    orderBy: searchParams.orderBy,
+  });
   const totalPages = Math.ceil(count / 12);
 
   const tags = await getAllTags();
@@ -57,20 +72,34 @@ export default async function TalksPage({
       </div>
       <div className="mt-2 flex flex-col items-start justify-between md:flex-row md:items-center">
         <div className="flex flex-row flex-wrap gap-2">
-          <SpeakerFilter speakers={speakers} />
-          <TagFilter tags={tags} />
           <TalkSearch />
-        </div>
-        <div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant={"outline"}>
+                <Filter className="mr-2 h-4 w-4" />
+                Filters
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-46 space-y-2">
+              <SpeakerFilter speakers={speakers} />
+              <TagFilter tags={tags} />
+            </PopoverContent>
+          </Popover>
           {(searchParams.query ||
             searchParams.speakerId ||
             searchParams.tagName) && <ResetButton />}
+        </div>
+        <div>
+          <OrderSelect />
         </div>
       </div>
       <Separator className="my-4" />
       <div className="mb-2 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
         {talks.map((talk) => (
-          <Card key={talk.id}>
+          <Card
+            key={talk.id}
+            className="group transition-colors delay-150 duration-300 ease-in-out hover:border-primary"
+          >
             <CardHeader>
               <CardTitle>{talk.title}</CardTitle>
               <CardDescription>
@@ -90,7 +119,7 @@ export default async function TalksPage({
               {talk.tags.map(({ name }) => (
                 <span
                   key={name}
-                  className="text-bold rounded bg-secondary p-1 text-sm font-semibold text-secondary-foreground dark:bg-secondary/70"
+                  className="text-bold group-hover:text-primary-foreground: rounded bg-secondary p-1 text-sm font-semibold text-secondary-foreground delay-100 duration-300 ease-in-out group-hover:bg-primary dark:bg-secondary/70"
                 >
                   {name}
                 </span>

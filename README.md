@@ -16,8 +16,8 @@ A place to share talks from tech conferences and get hyped about future conferen
   - [ ] Add comments for authenticated users on each video
   - [ ] Track views and likes on each video
   - [ ] Have a page for displaying the top 50 talks (by # of likes)
-  - [ ] Users can search for talks by different tags like "Javascript", "AI", "Informative", "Funny/entertaining"
-  - [ ] Users can also search by the speaker
+  - [X] Users can search for talks by different tags like "Javascript", "AI", "Informative", "Funny/entertaining"
+  - [X] Users can also search by the speaker
   - [ ] Users can search by year and conference
   - [ ] *Bonus* If a talk transcript is included, it can be searched for with AI
 - Conferences

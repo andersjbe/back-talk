@@ -28,58 +28,89 @@ export const getAllSpeakers = unstable_cache(
   { tags: ["get-all-speakers"] },
 );
 
-const talksQuery = e.params(
-  {
-    skip: e.optional(e.int32),
-    tagName: e.optional(e.uuid),
-    speakerId: e.optional(e.uuid),
-    queryTerm: e.optional(e.str),
-  },
-  (p) => {
-    return e.select(e.TalkRecording, (talk) => ({
-      id: true,
-      createdAt: true,
-      description: true,
-      length: true,
-      title: true,
-      year: true,
-      tags: {
-        name: true,
-        limit: 5,
+export const getTalks = unstable_cache(
+  async ({
+    page,
+    orderBy,
+    searchTerm,
+    speakerId,
+    tagName,
+  }: {
+    page: number;
+    orderBy?: string;
+    searchTerm?: string;
+    speakerId?: string;
+    tagName?: string;
+  }) => {
+    if (!orderBy || !["createdAt", "length", "year"].includes(orderBy)) {
+      orderBy = "createdAt";
+    }
+
+    let orderQuery;
+    if (orderBy === "createdAt") {
+      orderQuery = e.select(e.TalkRecording, (q) => ({
+        order_by: q.createdAt,
+      }));
+    } else if (orderBy === "length") {
+      orderQuery = e.select(e.TalkRecording, (q) => ({
+        order_by: q.length,
+      }));
+    } else {
+      orderQuery = e.select(e.TalkRecording, (q) => ({
+        order_by: q.year,
+      }));
+    }
+
+    const talksQuery = e.params(
+      {
+        skip: e.optional(e.int32),
+        tagName: e.optional(e.uuid),
+        speakerId: e.optional(e.uuid),
+        queryTerm: e.optional(e.str),
       },
-      speakers: {
-        name: true,
-      },
-      filter: e.all(
-        e.set(
-          e.op(p.speakerId, "in", talk.speakers.id),
-          e.op(p.tagName, "in", talk.tags.id),
-          e.any(
+      (p) => {
+        let query = e.select(orderQuery, (q) => ({
+          ...q["*"],
+          id: true,
+          createdAt: true,
+          description: true,
+          length: true,
+          title: true,
+          year: true,
+          tags: {
+            filter: e.op("exists", q.tags),
+            limit: 5,
+            name: true,
+          },
+          speakers: {
+            name: true,
+          },
+          filter: e.all(
             e.set(
-              e.op(talk.title, "ilike", p.queryTerm),
-              e.op(talk.description, "ilike", p.queryTerm),
+              e.op(p.speakerId, "in", q.speakers.id),
+              e.op(p.tagName, "in", q.tags.id),
+              e.any(
+                e.set(
+                  e.op(q.title, "ilike", p.queryTerm),
+                  e.op(q.description, "ilike", p.queryTerm),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
 
-      order_by: talk.createdAt,
-      limit: 12,
-      offset: p.skip,
-    }));
-  },
-);
-export const getTalks = unstable_cache(
-  async (
-    page: number,
-    searchTerm?: string,
-    speakerId?: string,
-    tagName?: string,
-  ) => {
+          limit: 12,
+          offset: p.skip,
+        }));
+
+        return query;
+      },
+    );
+
     const count = await e.count(e.TalkRecording).run(client);
+
     const talks = await talksQuery.run(client, {
-      skip: (page - 1) * 24,
-      queryTerm: searchTerm ? `%${searchTerm}%` : null,
+      skip: (page - 1) * 12,
+      queryTerm: `%${searchTerm || ""}%`,
       speakerId: speakerId || null,
       tagName: tagName || null,
     });

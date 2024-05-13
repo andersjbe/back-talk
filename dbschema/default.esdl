@@ -55,7 +55,7 @@ module default {
     }
 
     required multi speakers: Speaker;
-    required multi tags: TalkTag;
+    multi tags: TalkTag;
     userViews := .<vieweRecordings[is User];
   }
 

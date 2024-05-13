@@ -24,8 +24,8 @@ const insertTalk = e.params(
     title: e.str,
     year: e.int32,
     videoUrl: e.str,
-    description: e.str,
-    tagsNames: e.array(e.str),
+    description: e.optional(e.str),
+    tagsNames: e.optional(e.array(e.str)),
     speakers: e.array(e.uuid),
   },
   (p) =>
