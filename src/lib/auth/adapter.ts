@@ -1,5 +1,5 @@
-import { Client } from "edgedb";
-import { Adapter, DatabaseSession, DatabaseUser } from "lucia";
+import type { Client } from "edgedb";
+import type { Adapter, DatabaseSession, DatabaseUser } from "lucia";
 import e from "~/edgeql-js";
 
 export class EdgeDBAdapter implements Adapter {
@@ -8,7 +8,7 @@ export class EdgeDBAdapter implements Adapter {
   constructor(client: Client) {
     this.client = client;
   }
-
+ 
   async getSessionAndUser(
     sessionId: string,
   ): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {

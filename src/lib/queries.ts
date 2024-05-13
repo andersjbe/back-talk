@@ -1,5 +1,4 @@
 import { unstable_cache } from "next/cache";
-import "server-only";
 import e, { createClient } from "~/edgeql-js";
 
 const client = createClient();
@@ -46,6 +45,7 @@ export const getTalks = unstable_cache(
       orderBy = "createdAt";
     }
 
+    // biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
     let orderQuery;
     if (orderBy === "createdAt") {
       orderQuery = e.select(e.TalkRecording, (q) => ({
@@ -69,7 +69,7 @@ export const getTalks = unstable_cache(
         queryTerm: e.optional(e.str),
       },
       (p) => {
-        let query = e.select(orderQuery, (q) => ({
+        const query = e.select(orderQuery, (q) => ({
           ...q["*"],
           id: true,
           createdAt: true,
@@ -110,12 +110,21 @@ export const getTalks = unstable_cache(
 
     const talks = await talksQuery.run(client, {
       skip: (page - 1) * 12,
-      queryTerm: `%${searchTerm || ""}%`,
-      speakerId: speakerId || null,
-      tagName: tagName || null,
+      queryTerm: `%${searchTerm ?? ""}%`,
+      speakerId: speakerId ?? null,
+      tagName: tagName ?? null,
     });
     return { talks, count };
   },
   [],
-  { tags: [`get-talks`], revalidate: 2 },
+  { tags: ["get-talks"], revalidate: 2 },
 );
+
+export const getTalkById = unstable_cache(async (talkId: string) => {
+  return await e
+    .select(e.TalkRecording, (talk) => ({
+      // talk.,
+      filter_single: e.op(talk.id, "==", e.uuid(talkId)),
+    }))
+    .run(client);
+});

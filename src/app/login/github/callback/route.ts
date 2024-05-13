@@ -1,7 +1,7 @@
 import { OAuth2RequestError } from "arctic";
-import { randomUUID } from "crypto";
 import { generateIdFromEntropySize } from "lucia";
 import { cookies } from "next/headers";
+import { randomUUID } from "node:crypto";
 import e, { createClient } from "~/edgeql-js";
 import { lucia } from "~/lib/auth/lucia";
 import { github } from "~/lib/auth/providers";

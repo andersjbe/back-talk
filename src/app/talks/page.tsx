@@ -98,7 +98,7 @@ export default async function TalksPage({
         {talks.map((talk) => (
           <Card
             key={talk.id}
-            className="group transition-colors delay-150 duration-300 ease-in-out hover:border-primary"
+            className="delay-50 group transition-all duration-300 ease-in-out hover:scale-105 hover:border-primary "
           >
             <CardHeader>
               <CardTitle>{talk.title}</CardTitle>
@@ -146,9 +146,9 @@ function Pages({
   const showRightElipsis = totalPages - page + 1 > displayPages / 2;
 
   const getPageNumbers = () => {
-    if (totalPages <= totalPages) {
+    if (page <= totalPages) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
-    } else {
+    }
       const half = Math.floor(totalPages / 2);
       // To ensure that the current page is always in the middle
       let start = page - half;
@@ -172,7 +172,6 @@ function Pages({
         end--;
       }
       return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-    }
   };
 
   const renderPaginationItems = () => {

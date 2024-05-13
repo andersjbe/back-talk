@@ -1,5 +1,5 @@
 import createClient from "edgedb";
-import { Lucia, Session, User } from "lucia";
+import { Lucia, type Session, type User } from "lucia";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { EdgeDBAdapter } from "./adapter";
@@ -43,7 +43,7 @@ export const validateRequest = cache(
 
     const result = await lucia.validateSession(sessionId);
     try {
-      if (result.session && result.session.fresh) {
+      if (result.session?.fresh) {
         const sessionCookie = lucia.createSessionCookie(result.session.id);
         cookies().set(
           sessionCookie.name,
